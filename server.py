@@ -53,6 +53,7 @@ def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
     if req['session']['new']:
+        animal = 'слона'
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
         # Запишем подсказки, которые мы ему покажем в первый раз
@@ -85,7 +86,8 @@ def handle_dialog(req, res):
     ]:
         # Пользователь согласился, прощаемся.
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
-        # res['response']['end_session'] = True
+        animal = 'кролика'
+        res['response']['end_session'] = True
         sessionStorage[user_id] = {
             'suggests': [
                 "Не хочу.",
@@ -93,11 +95,23 @@ def handle_dialog(req, res):
                 "Отстань!",
             ]
         }
-        # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи кролика!'
-        # Получим подсказки
-        res['response']['buttons'] = get_suggests(user_id)
-        return
+        if not req['session']['new']:
+            # Это новый пользователь.
+            # Инициализируем сессию и поприветствуем его.
+            # Запишем подсказки, которые мы ему покажем в первый раз
+
+            sessionStorage[user_id] = {
+                'suggests': [
+                    "Не хочу.",
+                    "Не буду.",
+                    "Отстань!",
+                ]
+            }
+            # Заполняем текст ответа
+            res['response']['text'] = 'Привет! Купи кролика!'
+            # Получим подсказки
+            res['response']['buttons'] = get_suggests(user_id)
+            return
 
     if req['request']['original_utterance'].lower() in [
         'ладно',
@@ -108,10 +122,10 @@ def handle_dialog(req, res):
         'я куплю'
     ]:
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
+        res['response']['text'] = 'Кролика можно найти на Яндекс.Маркете!'
 
     # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = 'Все говорят "%s", а ты купи слона!' % (
+    res['response']['text'] = f'Все говорят "%s", а ты купи {animal}!' % (
         req['request']['original_utterance']
     )
     res['response']['buttons'] = get_suggests(user_id)
