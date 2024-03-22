@@ -49,7 +49,11 @@ def main():
     return json.dumps(response)
 
 
+elephant_buy = False
+
+
 def handle_dialog(req, res):
+    global elephant_buy
     user_id = req['session']['user_id']
 
     if req['session']['new']:
@@ -67,23 +71,31 @@ def handle_dialog(req, res):
 
     # Сюда дойдем только, если пользователь не новый, и разговор с Алисой уже был начат
     # Обрабатываем ответ пользователя.
-    elephant_buy = False
-    animal = 'слона'
+
     if req['request']['original_utterance'].lower() in ['ладно', 'куплю', 'покупаю', 'хорошо', 'я покупаю', 'я куплю']:
         # Пользователь согласился, прощаемся.
-        elephant_buy = True
-        animal = 'кролика'
-
-    if elephant_buy:
         res['response']['text'] = 'Купи кролика!'
-        if req['request']['original_utterance'].lower() in ['ладно', 'куплю', 'покупаю', 'хорошо', 'я покупаю', 'я куплю']:
-            res['response']['end_session'] = False
+        res['response']['end_session'] = False
+        elephant_buy = True
+        return
+
+    if req['request']['original_utterance'].lower() in ['ладно', 'куплю', 'покупаю', 'хорошо', 'я покупаю',
+                                                        'я куплю'] and elephant_buy:
+        res['response']['text'] = 'Кролика можно найти на Яндекс.Маркете!'
+        res['response']['end_session'] = True
+        return
 
     # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = f'Все говорят "%s", а ты купи {animal}!' % (
-        req['request']['original_utterance']
-    )
-    res['response']['buttons'] = get_suggests(user_id)
+    if not elephant_buy:
+        res['response']['text'] = 'Все говорят "%s", а ты купи слона!' % (
+            req['request']['original_utterance']
+        )
+        res['response']['buttons'] = get_suggests(user_id)
+    else:
+        res['response']['text'] = 'Все говорят "%s", а ты купи кролика!' % (
+            req['request']['original_utterance']
+        )
+        res['response']['buttons'] = get_suggests(user_id)
 
 
 # Функция возвращает две подсказки для ответа.
