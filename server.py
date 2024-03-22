@@ -77,7 +77,7 @@ def handle_dialog(req, res):
     if elephant_buy:
         res['response']['text'] = 'Купи кролика!'
         if req['request']['original_utterance'].lower() in ['ладно', 'куплю', 'покупаю', 'хорошо', 'я покупаю', 'я куплю']:
-            res['response']['end_session'] = True
+            res['response']['end_session'] = False
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = f'Все говорят "%s", а ты купи {animal}!' % (
