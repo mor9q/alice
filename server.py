@@ -51,9 +51,9 @@ def main():
 
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
-
+    animal = 'слона'
     if req['session']['new']:
-        animal = 'слона'
+
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
         # Запишем подсказки, которые мы ему покажем в первый раз
